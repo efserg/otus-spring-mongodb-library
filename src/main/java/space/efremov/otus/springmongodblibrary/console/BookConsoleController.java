@@ -35,9 +35,9 @@ public class BookConsoleController {
             @ShellOption(help = "Book title. Use quotes if you need, e.g. \"Large Scale Machine Learning with Python\".", value = {"title", "book-title", "bookTitle"}) String title,
             @ShellOption(help = "Book ISBN.", value = {"isbn", "book-isbn", "bookIsbn"}) String isbn,
             @ShellOption(help = "Book year.", value = {"year", "book-year", "bookYear"}) Integer year,
-            @ShellOption(help = "Publisher. Use \"publisher list\" command to find exist publishers", value = {"publisher"}) String publisher,
-            @ShellOption(help = "Author list, separated by \",\". Use \"author list\" command to find exist authors", defaultValue = "", value = {"authors", "author-list", "authorList"}) String authorNames,
-            @ShellOption(help = "Tag list, separated by \",\". Use \"tag list\" command to find exist tags", defaultValue = "", value = {"tags", "tag-list", "tagList"}) String tagList
+            @ShellOption(help = "Publisher.", value = {"publisher"}) String publisher,
+            @ShellOption(help = "Author list, separated by \",\". Use \"author find\" command to find exist authors.", defaultValue = "", value = {"authors", "author-list", "authorList"}) String authorNames,
+            @ShellOption(help = "Tag list, separated by \",\".", defaultValue = "", value = {"tags", "tag-list", "tagList"}) String tagList
     ) {
         final List<Author> authors = Arrays.stream(authorNames.split(",")).map(name -> {
             final Optional<Author> author = authorRepository.findByName(name);
@@ -54,16 +54,12 @@ public class BookConsoleController {
     }
 
     @ShellMethod(value = "Find book from DB.", key = {"book-find", "book find"})
-    public List<Book> find(
-            @ShellOption(help = "Any field of book or part of field (book title, author, tag, ISBN, year, publisher). Can be empty if you want to find all books", defaultValue = "") String field
-    ) {
+    public List<Book> find(@ShellOption(help = "Any field of book or part of field (book title, author, tag, ISBN, year, publisher). Can be empty if you want to find all books", defaultValue = "") String field) {
         return bookRepository.findByAny(field);
     }
 
     @ShellMethod(value = "Get book from DB by ID.", key = {"book get", "book-get"})
-    public Book get(
-            @ShellOption(help = "Book ID. You can use \"book find\" without parameters to found ID", value = {"id", "bid", "bookId", "book-id"}) String id
-    ) {
+    public Book get(@ShellOption(help = "Book ID. You can use \"book find\" without parameters to found ID", value = {"id", "bid", "bookId", "book-id"}) String id) {
         return bookRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 

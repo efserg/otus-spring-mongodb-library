@@ -31,7 +31,7 @@ public class AuthorConsoleController {
 
     @ShellMethod(value = "Remove author from DB.", key = {"author remove", "author-remove"})
     @Transactional
-    public void remove(@ShellOption(help = "Author ID. You can use \"author find\" command to found ID", value = {"author-id", "aid", "authorId", "id"}, defaultValue = "") String id) {
+    public void remove(@ShellOption(help = "Author ID. You can use \"author find\" command to found ID", value = {"author-id", "aid", "authorId", "id"}) String id) {
         final Optional<Author> author = authorRepository.findById(id);
         authorRepository.delete(author.orElseThrow(EntityNotFoundException::new));
     }
@@ -42,7 +42,7 @@ public class AuthorConsoleController {
     }
 
     @ShellMethod(value = "Get author from DB.", key = {"author get", "author-get"})
-    public Author get(@ShellOption(help = "Author ID.", value = {"author-id", "aid", "authorId", "id"}, defaultValue = "") String id) {
+    public Author get(@ShellOption(help = "Author ID.", value = {"author-id", "aid", "authorId", "id"}) String id) {
         return authorRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 

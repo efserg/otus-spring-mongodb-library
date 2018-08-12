@@ -31,7 +31,7 @@ public class UserConsoleController {
 
     @ShellMethod(value = "Remove user from DB.", key = {"user remove", "user-remove"})
     @Transactional
-    public void remove(@ShellOption(help = "user ID. You can use \"user find\" command to found ID", value = {"user-id", "uid", "userId", "id"}) String id) {
+    public void remove(@ShellOption(help = "User ID. You can use \"user find\" command to found ID", value = {"user-id", "uid", "userId", "id"}) String id) {
         userRepository.delete(userRepository.findById(id).orElseThrow(EntityNotFoundException::new));
     }
 
