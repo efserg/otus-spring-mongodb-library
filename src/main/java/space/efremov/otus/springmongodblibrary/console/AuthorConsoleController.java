@@ -9,8 +9,6 @@ import space.efremov.otus.springmongodblibrary.domain.Author;
 import space.efremov.otus.springmongodblibrary.exception.EntityNotFoundException;
 import space.efremov.otus.springmongodblibrary.repository.AuthorRepository;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,27 +31,19 @@ public class AuthorConsoleController {
 
     @ShellMethod(value = "Remove author from DB.", key = {"author remove", "author-remove"})
     @Transactional
-    public void remove(@ShellOption(help = "Author ID. You can use \"author list\" command to found ID", value = {"author-id", "aid", "authorId", "id"}, defaultValue = "") String id) {
+    public void remove(@ShellOption(help = "Author ID. You can use \"author find\" command to found ID", value = {"author-id", "aid", "authorId", "id"}, defaultValue = "") String id) {
         final Optional<Author> author = authorRepository.findById(id);
         authorRepository.delete(author.orElseThrow(EntityNotFoundException::new));
     }
 
-    @ShellMethod(value = "Get author from DB.", key = {"author get", "author-get"})
-    public List<Author> get(@ShellOption(help = "Author ID.", value = {"author-id", "aid", "authorId", "id"}, defaultValue = "") String id,
-                            @ShellOption(help = "Author name or part of name. You can use \"author list\" command to see all authors", value = {"author-name", "name", "authorName"}, defaultValue = "") String name) {
-        final ArrayList<Author> authors = new ArrayList<>();
-        if (!name.isEmpty()) {
-            authors.addAll(authorRepository.findByNameRegex(name));
-        } else if (!id.isEmpty()) {
-            authors.add(authorRepository.findById(id).orElseThrow(EntityNotFoundException::new));
-        } else {
-            return list();
-        }
-        return authors;
+    @ShellMethod(value = "Get author from DB.", key = {"author find", "author-find"})
+    public List<Author> find(@ShellOption(help = "Author name or part of name. Can be empty if you need all authors", value = {"author-name", "name", "authorName"}, defaultValue = "") String name) {
+        return authorRepository.findByNameContains(name);
     }
 
-    @ShellMethod(value = "Get all authors from DB.", key = {"author list", "author-list"})
-    public List<Author> list() {
-        return authorRepository.findAll();
+    @ShellMethod(value = "Get author from DB.", key = {"author get", "author-get"})
+    public Author get(@ShellOption(help = "Author ID.", value = {"author-id", "aid", "authorId", "id"}, defaultValue = "") String id) {
+        return authorRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
+
 }

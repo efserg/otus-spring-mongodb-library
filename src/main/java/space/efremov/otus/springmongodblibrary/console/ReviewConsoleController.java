@@ -38,7 +38,7 @@ public class ReviewConsoleController {
         return review;
     }
 
-    @ShellMethod(value = "Get all authors from DB.", key = {"review list", "review-list"})
+    @ShellMethod(value = "Get all reviews from DB.", key = {"review list", "review-list"})
     public List<Review> list(@ShellOption(help = "Book ID.", value = {"book-id", "bid", "bookId"}) String bookId) {
         final Book book = bookRepository.findById(bookId).orElseThrow(EntityNotFoundException::new);
         return book.getReviews();

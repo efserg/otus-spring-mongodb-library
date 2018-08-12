@@ -35,6 +35,15 @@ public class Book {
     @DBRef
     private List<Review> reviews;
 
+    public Book(String title, List<Author> authors, String publisher, Integer year, String isbn, List<String> tags) {
+        this.title = title;
+        this.authors = authors;
+        this.publisher = publisher;
+        this.tags = tags;
+        this.year = year;
+        this.isbn = isbn;
+    }
+
     public void addReview(Review review) {
         if (this.reviews == null) this.reviews = new ArrayList<>();
         this.reviews.add(review);
