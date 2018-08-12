@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import space.efremov.otus.springmongodblibrary.domain.Author;
 
@@ -16,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataMongoTest
-@TestConfiguration("MongoConfig")
 public class AuthorRepositoryTest {
 
     @Autowired
