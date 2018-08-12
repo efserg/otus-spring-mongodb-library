@@ -12,7 +12,6 @@ import space.efremov.otus.springmongodblibrary.repository.AuthorRepository;
 import space.efremov.otus.springmongodblibrary.repository.BookRepository;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

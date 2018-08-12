@@ -81,7 +81,6 @@ public class AuthorRepositoryTest {
 
         repository.deleteAll();
         assertThat(repository.findAll()).isNullOrEmpty();
-
     }
 
 }
