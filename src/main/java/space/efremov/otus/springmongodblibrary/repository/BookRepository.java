@@ -15,5 +15,4 @@ public interface BookRepository extends ReactiveMongoRepository<Book, String> {
             "] }")
     Flux<Book> findByAny(String field);
 
-
 }
