@@ -1,6 +1,8 @@
 package space.efremov.otus.springmongodblibrary.controller.rest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,7 +15,7 @@ public class AuthorRestController {
 
     private final LibraryService service;
 
-    public AuthorRestController(LibraryService service) {
+    public AuthorRestController(@Autowired LibraryService service) {
         this.service = service;
     }
 
@@ -23,20 +25,25 @@ public class AuthorRestController {
     }
 
     @GetMapping(value = "/{id}")
-    Mono<Author> author(@PathVariable("id") String id) {
-        return service.findAuthorById(id);
+    Mono<ResponseEntity<Author>> author(@PathVariable("id") String id) {
+        return service.findAuthorById(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    Mono<Author> create(@RequestBody AuthorInputDto input) {
-        return service.createAuthor(input.getName());
+    Mono<ResponseEntity<Author>> create(@RequestBody AuthorInputDto input) {
+        return service.createAuthor(input.getName())
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.badRequest().build());
     }
 
     @DeleteMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    Mono<Void> delete(@PathVariable("id") String id) {
-        return service.removeAuthor(id);
+    Mono<ResponseEntity<Void>> delete(@PathVariable("id") String id) {
+        return service.removeAuthor(id)
+                .then(Mono.just(new ResponseEntity<Void>(HttpStatus.NO_CONTENT)))
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
 }

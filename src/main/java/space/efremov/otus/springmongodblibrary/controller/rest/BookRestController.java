@@ -1,5 +1,6 @@
 package space.efremov.otus.springmongodblibrary.controller.rest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ public class BookRestController {
 
     private final LibraryService service;
 
-    public BookRestController(LibraryService service) {
+    public BookRestController(@Autowired LibraryService service) {
         this.service = service;
     }
 

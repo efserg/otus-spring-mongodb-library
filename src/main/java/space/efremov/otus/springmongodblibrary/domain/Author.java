@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(of = "name")
+@EqualsAndHashCode(of = {"name", "id"})
 public class Author {
 
     @Id
