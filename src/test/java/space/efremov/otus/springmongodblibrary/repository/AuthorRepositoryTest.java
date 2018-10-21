@@ -4,81 +4,83 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 import space.efremov.otus.springmongodblibrary.domain.Author;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @DataMongoTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class AuthorRepositoryTest {
 
     @Autowired
     private AuthorRepository repository;
+    private final String richardName = "Richard Matthew Stallman";
+    private final Author richard = new Author(richardName);
+    private final Author brian = new Author("Brian Kernighan");
+    private final Author dennis = new Author("Dennis MacAlistair Ritchie");
 
     @Test
-    public void authorCrudTest() {
-        final Author brian = new Author("Brian Wilson Kernighan");
-        final Author author = repository.save(brian);
-        final Optional<Author> find = repository.findById(author.getId());
-        assertThat(find).isNotEmpty();
-        assertThat(find.get()).isEqualTo(brian);
-        repository.delete(find.get());
-        final Optional<Author> notExist = repository.findById(author.getId());
-        assertThat(notExist).isEmpty();
+    public void authorRepositoryShouldSaveAuthorAndFoundHimByName() {
+        repository.save(richard).block();
+
+        Mono<Author> authorMono = repository.findByName(richardName);
+
+        StepVerifier.create(authorMono)
+                .assertNext(author -> {
+                    assertEquals(richardName, author.getName());
+                    assertNotNull(author.getId());
+                })
+                .expectComplete()
+                .verify();
+
     }
 
     @Test
-    public void getNotExistAuthorByIdTest() {
-        final String notExistAuthorId = "5b703688f2e12f8d24432a38";
-        final Optional<Author> author = repository.findById(notExistAuthorId);
-        assertThat(author).isEmpty();
+    public void authorRepositoryShouldReturnAllAuthors() {
+        repository.save(richard).block();
+        repository.save(brian).block();
+        repository.save(dennis).block();
+
+        final Flux<Author> authors = repository.findAll();
+
+        StepVerifier.create(authors)
+                .recordWith(ArrayList::new)
+                .expectNextCount(3)
+                .consumeRecordedWith(results -> {
+                    assertThat(results).hasSize(3);
+                    assertThat(results)
+                            .contains(
+                                    richard,
+                                    brian,
+                                    dennis);
+                })
+                .expectComplete()
+                .verify();
     }
 
     @Test
-    public void findAuthorAllTest() {
-        final Author richardStallman = new Author("Richard Matthew Stallman");
-        final Author dennisRitchie = new Author("Dennis MacAlistair Ritchie");
-        final Author andrewTanenbaum = new Author("Andrew Stuart Tanenbaum");
-        final List<Author> authors = Arrays.asList(richardStallman, dennisRitchie, andrewTanenbaum);
-        repository.saveAll(authors);
+    public void authorRepositoryShouldRemoveAuthor() {
+        final Author author = repository.save(richard).block();
+        assertThat(author).isNotNull();
+        final String id = author.getId();
+        assertThat(author.getName()).isEqualTo(richardName);
+        assertThat(id).isNotNull();
 
-        final List<Author> find = repository.findAll();
-        assertThat(find).containsOnly(richardStallman, dennisRitchie, andrewTanenbaum);
+        repository.delete(author);
 
-        repository.deleteAll();
-        assertThat(repository.findAll()).isNullOrEmpty();
+        StepVerifier.create(repository.findById(id)).assertNext(a -> assertThat(a).isNull());
+
     }
 
-    @Test
-    public void findByNameContainsTest() {
-        final Author donaldKnuth = new Author("Donald Ervin Knuth");
-        repository.save(donaldKnuth);
-        final List<Author> authors = repository.findByNameContains("ervin");
-        assertThat(authors).containsOnly(donaldKnuth);
-        final List<Author> notExists = repository.findByNameContains("ervik");
-        assertThat(notExists).isNullOrEmpty();
-        repository.deleteAll();
-        assertThat(repository.findAll()).isNullOrEmpty();
-    }
-
-    @Test
-    public void findByNameTest() {
-        final Author martinFowler = new Author("Martin Fowler");
-        repository.save(martinFowler);
-        final Optional<Author> maybeAuthor = repository.findByName("Martin Fowler");
-        assertThat(maybeAuthor).isNotEmpty();
-        assertThat(maybeAuthor.get()).isEqualTo(martinFowler);
-
-        final Optional<Author> notExist = repository.findByName("Martin ");
-        assertThat(notExist).isEmpty();
-
-        repository.deleteAll();
-        assertThat(repository.findAll()).isNullOrEmpty();
-    }
 
 }

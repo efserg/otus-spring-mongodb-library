@@ -2,7 +2,6 @@ package space.efremov.otus.springmongodblibrary.domain;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ public class Book {
 
     private String title;
 
-    @DBRef
     private List<Author> authors;
 
     private String publisher;
@@ -32,9 +30,6 @@ public class Book {
 
     private String isbn;
 
-    @DBRef
-    private List<Review> reviews;
-
     public Book(String title, List<Author> authors, String publisher, Integer year, String isbn, List<String> tags) {
         this.title = title;
         this.authors = authors;
@@ -42,11 +37,6 @@ public class Book {
         this.tags = tags;
         this.year = year;
         this.isbn = isbn;
-    }
-
-    public void addReview(Review review) {
-        if (this.reviews == null) this.reviews = new ArrayList<>();
-        this.reviews.add(review);
     }
 
     public void addAuthor(Author author) {
